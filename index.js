@@ -3,6 +3,7 @@ import puppeteer from 'puppeteer';
 import { sendEmail } from "./mailSender.js";
 
 const isScheduled = true;
+
 const REPORT_INTERVAL = 30000;
 
 const fetchReportContent = () => {
