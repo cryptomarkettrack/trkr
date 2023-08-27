@@ -2,7 +2,7 @@ import cheerio from 'cheerio';
 import puppeteer from 'puppeteer';
 import { sendEmail } from "./mailSender.js";
 
-const isScheduled = true;
+const isScheduled = false;
 
 const REPORT_INTERVAL = 30000;
 
@@ -37,30 +37,34 @@ const fetchReportContent = () => {
             let attachments = [];
             for (const key of Object.keys(json.result)) {
                 const obj = json.result[key];
-                console.log(`\n#${obj.Exchange}\n`);
-                content += `------------------------------\n#${obj.Exchange}\n`;
+                const exchange = obj.Exchange;
+                console.log(`\n#${exchange}\n`);
+                content += `------------------------------\n#${exchange}\n`;
 
                 console.log(`⬆️ Price Increase 1h`);
                 content += `⬆️ Price Increase 1h\n`;
+                let asset;
 
                 for (const [index, p] of obj.Pumps.entries()) {
+                    asset = p[0];
+
                     if (index === 0) {
-                        const content = await generateAnalysisImage(p[0], obj.Exchange)
+                        const content = await generateAnalysisImage(asset, exchange)
                         attachments.push({
-                            filename: `${p[0]}-${obj.Exchange}.png`,
+                            filename: `${asset}-${exchange}.png`,
                             content: content,
                         });
                     }
-                    console.log(`$${p[0]} ▴${p[1]}%`);
-                    content += `$${p[0]} ▴${p[1]}%\n`;
+                    console.log(`$${asset} ▴${p[1]}%`);
+                    content += `$${asset} ▴${p[1]}%\n`;
                 };
 
 
                 console.log(`\n⬆️ Volume Increase 1h`);
                 content += `\n⬆️ Volume Increase 1h\n`;
                 obj.Activity.forEach(p => {
-                    console.log(`$${p[0]} ▴${p[1]}%`);
-                    content += `$${p[0]} ▴${p[1]}%\n`;
+                    console.log(`$${asset} ▴${p[1]}%`);
+                    content += `$${asset} ▴${p[1]}%\n`;
                 });
             };
 
@@ -207,6 +211,4 @@ const main = () => {
     }
 }
 
-main();
-
-export default main;
+module.exports = main;
