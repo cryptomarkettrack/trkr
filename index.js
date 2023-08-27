@@ -2,7 +2,7 @@ import cheerio from 'cheerio';
 import puppeteer from 'puppeteer';
 import { sendEmail } from "./mailSender.js";
 
-const isScheduled = true;
+const isScheduled = false;
 
 const REPORT_INTERVAL = 30000;
 
@@ -43,10 +43,9 @@ const fetchReportContent = () => {
 
                 console.log(`⬆️ Price Increase 1h`);
                 content += `⬆️ Price Increase 1h\n`;
-                let asset;
 
                 for (const [index, p] of obj.Pumps.entries()) {
-                    asset = p[0];
+                    const asset = p[0];
 
                     if (index === 0) {
                         const content = await generateAnalysisImage(asset, exchange)
@@ -63,6 +62,7 @@ const fetchReportContent = () => {
                 console.log(`\n⬆️ Volume Increase 1h`);
                 content += `\n⬆️ Volume Increase 1h\n`;
                 obj.Activity.forEach(p => {
+                    const asset = p[0];
                     console.log(`$${asset} ▴${p[1]}%`);
                     content += `$${asset} ▴${p[1]}%\n`;
                 });
@@ -211,4 +211,4 @@ const main = () => {
     }
 }
 
-module.exports = main;
+main();
