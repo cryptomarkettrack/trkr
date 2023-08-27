@@ -2,7 +2,7 @@ import cheerio from 'cheerio';
 import puppeteer from 'puppeteer';
 import { sendEmail } from "./mailSender.js";
 
-const isScheduled = false;
+const isScheduled = true;
 
 const REPORT_INTERVAL = 30000;
 
