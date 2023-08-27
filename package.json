@@ -1,0 +1,20 @@
+{
+  "name": "binance.gainers",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "canvas": "^2.11.2",
+    "cheerio": "^1.0.0-rc.12",
+    "collections": "^5.1.13",
+    "dotenv": "^16.3.1",
+    "nodemailer": "^6.9.4",
+    "puppeteer": "^21.1.0"
+  }
+}
