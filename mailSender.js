@@ -13,8 +13,8 @@ var transporter = nodemailer.createTransport({
 export const sendEmail = (content, attachments = []) => {
     var mailOptions = {
         from: process.env.EMAIL,
-        to: process.env.EMAIL,
-        subject: 'Trades report',
+        to: 'crypto.market.track@gmail.com',
+        subject: 'Trades report - ' + new Date().toLocaleString(),
         text: content,
         attachments: attachments
     };

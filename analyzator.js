@@ -1,107 +1,93 @@
-import cheerio from 'cheerio';
 import puppeteer from 'puppeteer';
+import { clickInput } from './utils.js';
 
-export const generateAnalysisImage = async (asset, exchange) => {
-    if (exchange === 'Gateio') {
-        exchange = 'Gate';
+export const drawChart = async (assetOnExchanges) => {
+    //init setup
+    const browser = await puppeteer.launch({headless: false, args: ['--start-fullscreen']});
+    const url = 'https://dyor.net/#dashboard';
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1366, height: 768});
+    await page.goto(url);
+    
+    //login
+    await login(page);
+
+    //collect analytic images
+    let images = [];
+    for await (const [asset, exchange] of Object.entries(assetOnExchanges)) {
+      images.push({
+        filename: `${asset}-${exchange}.jpeg`,
+        content: await processPair(page, asset, exchange),
+    });
     }
 
-    return new Promise((resolve, reject) => {
-        fetch("https://dyor.net/js/quickview.php", {
-            "headers": {
-                "accept": "*/*",
-                "accept-language": "en-GB,en;q=0.8",
-                "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-                "sec-ch-ua": "\"Not/A)Brand\";v=\"99\", \"Brave\";v=\"115\", \"Chromium\";v=\"115\"",
-                "sec-ch-ua-mobile": "?0",
-                "sec-ch-ua-platform": "\"macOS\"",
-                "sec-fetch-dest": "empty",
-                "sec-fetch-mode": "cors",
-                "sec-fetch-site": "same-origin",
-                "sec-gpc": "1",
-                "x-requested-with": "XMLHttpRequest"
-            },
-            "referrer": "https://dyor.net/",
-            "referrerPolicy": "strict-origin-when-cross-origin",
-            "body": "cointoload=" + asset + "-USDT-" + exchange + "&action=load",
-            "method": "POST",
-            "mode": "cors",
-            "credentials": "include"
-        }).then(response => response.text())
-            .then(htmlText => {
-                const $ = cheerio.load(htmlText);
-                let isOneHourAnalysis = true;
+    browser.close();
 
-                let element = $('[id="' + asset + 'USDT1h-analysis"]');
+    return images;
+}
 
-                if (element.length === 0) {
-                    element = $('[id="' + asset + 'USDT4h-analysis"]');
-                    isOneHourAnalysis = false;
-                }
+const processPair = async (page, asset, exchange) => {
+  if (exchange === 'Kucoin') {
+    exchange = 'KuCoin';
+  }
 
-                if (element.length > 0) {
+  if (exchange === 'Mexc') {
+    return;
+  }
 
-                    (async () => {
+  if (exchange == 'Gateio') {
+    exchange = 'Gate'
+  }
+  
+  //Search and select an asset
+  await page.waitForSelector('#quickviewform-searchcoin');
+  await page.type('#quickviewform-searchcoin', asset);
+  await page.waitForSelector(`[data-value="${asset}-USDT-${exchange}"]`);
+  await page.click(`[data-value="${asset}-USDT-${exchange}"]`);
 
-                        const content = element.html();
-                        const browser = await puppeteer.launch();
-                        const page = await browser.newPage();
+  //Click 4h frame
+  await page.waitForSelector(`#${asset}USDT > td:nth-child(4)`);
+  await page.click(`#${asset}USDT > td:nth-child(4)`);
 
-                        // Set the HTML content
-                        const htmlContent = `<html>
-                        <head>
-                        <link rel="stylesheet"
-                              href="https://fonts.googleapis.com/css?family=Josefin%20Sans">
-                              <style>
-                              body {
-                                font-family: 'Josefin Sans';
-                                background: #16202c;
-                                height: fit-content;
-                              }
-                              
-                              .content {
-                                background: linear-gradient(0deg, rgba(255,255,255,0.01) 0%, rgba(255,255,255,0.065) 100%);
-                                padding: 20px;
-                              }
-                              
-                              .bearish {
-                                color: #f5505f;
-                              }
-                              
-                              .bearish-indicators li {
-                                color: #f5505f;
-                              }
-                              
-                              .bullish {
-                                color: #23d2b9;
-                              }
-                              
-                              .bullish-indicators li {
-                                color: #23d2b9;
-                              }
+  //Display patterns on the chart
+  await page.waitForSelector('#the-chart');
+  await clickInput(page, '#ma50100-input');
+  await clickInput(page, '#continuation_falling_wedge-input');
+  await clickInput(page, '#reversal_falling_wedge-input');
+  await clickInput(page, '#bullish_pennant-input');
+  await clickInput(page, '#bull_flag-input');
+  await clickInput(page, '#ascending_triangle-input');
+  await clickInput(page, '#symmetrical_triangle-input');
+  await clickInput(page, '#bearish_pennant-input');
+  await clickInput(page, '#trendline-input');
+  
+  //move the cursor away
+  await page.mouse.move(1, 1);
 
-                              .title {
-                                color: #23d2b9;
-                              }
-                              </style>
-                              </head>
-                              <body><div class="content"><p class="title">${asset}/USDT - ${isOneHourAnalysis ? '1h' : '4h'} Analysis</p>${content}</div></body></html>`;
-                        await page.setContent(htmlContent, { waitUntil: 'networkidle2' });
+  // Capture a screenshot and save it as a JPG file
+  await new Promise(resolve => setTimeout(resolve, 1000)); // 1 sec
+  const image = await page.screenshot({ type: 'jpeg', quality: 100, omitBackground: true });
 
-                        // Capture a screenshot and save it as a JPG file
-                        // await page.screenshot({ path: 'screenshot.jpg', type: 'jpeg', quality: 100 });
+  //Hide the chart and proceed to next asset if present
+  await page.click('a.hide-chart');
 
-                        const contentElement = await page.$('.content');        // declare a variable with an ElementHandle
-                        const resultImage = await contentElement.screenshot({ type: 'jpeg', quality: 100, omitBackground: true });
+  return image;
+}
 
-                        await browser.close();
+const login = async (page) => {
+    //click login
+    await page.click('body > div.dyor-main > div.dyor-content.scroll > div.dyor-header > div.dyor-home-menu > ul > li:nth-child(4) > a');
+    
+    //set email and pass
+    await page.waitForSelector('#user-email');
+    await page.type('#user-email', process.env.DYOR_USER);
+    await page.type('#user-password', process.env.DYOR_PASS);
 
-                        resolve(resultImage)
-                    })();
-                } else {
-                    console.log("Element not found");
-                    resolve(null);
-                }
-            });
-    })
+    //click submit
+    await page.click('body > div.dyor-popin.dyor-standard-popin > div > div > div.signin-tab.tab.active > form > input[type=submit]');
+ 
+    //wait for premium modal
+    await page.waitForSelector('#premium-soon');
+    //click submit
+    await page.click('.close-popin');
 }
