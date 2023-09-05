@@ -8,7 +8,7 @@ const checkAndExecute = () => {
     const currentMinutes = now.getMinutes()
     const currentHours = now.getHours()
 
-    if (currentMinutes === 58 && currentHours > 5 && currentHours <= 23 && !processed) {
+    if (currentMinutes === 59 && currentHours >= 8 && currentHours <= 21 && !processed) {
     // Execute your code here
         console.log('Code executed because current minutes are 59.')
 
