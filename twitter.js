@@ -13,6 +13,7 @@ const client = new TwitterApi({
 const rwClient = client.readWrite
 
 export const tweet = (text, imagePath) => {
+  try {
     // lower path
     imagePath = imagePath.toLowerCase()
 
@@ -21,6 +22,9 @@ export const tweet = (text, imagePath) => {
     } else {
         tweetText(text)
     }
+  } catch (e) {
+    console.log('An error ocurred while tweeting.', e);
+  }
 }
 
 // Create textTweet function which post
