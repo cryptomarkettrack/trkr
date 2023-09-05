@@ -46,24 +46,28 @@ const processPair = async (page, asset, exchange) => {
         await page.waitForSelector('#quickviewform-searchcoin')
         await page.type('#quickviewform-searchcoin', asset)
         await page.waitForSelector(`[data-value="${asset}-USDT-${exchange}"]`)
-        console.log('selector', asset, exchange)
         await page.click(`[data-value="${asset}-USDT-${exchange}"]`)
 
         // Click 4h frame
         await page.waitForSelector(`#${asset}USDT > td:nth-child(4)`)
         await page.click(`#${asset}USDT > td:nth-child(4)`)
 
+        // Click 4h frame
+        await page.waitForSelector('.macd')
+        await page.click('.macd')
+
         // Display patterns on the chart
         await page.waitForSelector('#the-chart')
         await clickInput(page, '#ma50100-input')
-        await clickInput(page, '#continuation_falling_wedge-input')
-        await clickInput(page, '#reversal_falling_wedge-input')
-        await clickInput(page, '#bullish_pennant-input')
-        await clickInput(page, '#bull_flag-input')
-        await clickInput(page, '#ascending_triangle-input')
-        await clickInput(page, '#symmetrical_triangle-input')
-        await clickInput(page, '#bearish_pennant-input')
+        // await clickInput(page, '#continuation_falling_wedge-input')
+        // await clickInput(page, '#reversal_falling_wedge-input')
+        // await clickInput(page, '#bullish_pennant-input')
+        // await clickInput(page, '#bull_flag-input')
+        // await clickInput(page, '#ascending_triangle-input')
+        // await clickInput(page, '#symmetrical_triangle-input')
+        // await clickInput(page, '#bearish_pennant-input')
         await clickInput(page, '#trendline-input')
+        await clickInput(page, '#horizontallines-input')
 
         // move the cursor away
         await page.mouse.move(1, 1)

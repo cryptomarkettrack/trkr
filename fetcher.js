@@ -82,16 +82,17 @@ const processData = json => {
             tweets[exchange].text += '#crypto\n'
         };
 
-        // collect analytic images and attach them to the mail
+        // collect analytic images
         if (process.env.DYOR_ENABLED === 'true' || process.env.DYOR_ENABLED === true) {
             attachments = await drawChart(exchangeAssetMap)
             attachments = attachments.filter(a => a !== undefined)
         }
 
-        // Twitter post
+        // Send email
         (process.env.SEND_EMAIL_ENABLED === 'true' || process.env.SEND_EMAIL_ENABLED === true) &&
             sendEmail(content, attachments)
 
+        // Twitter post
         if (process.env.TWITTER_ENABLED === 'true' || process.env.TWITTER_ENABLED === true) {
             Object.keys(tweets).forEach(exchange => {
                 // Replace Gateio to Gate
@@ -103,6 +104,8 @@ const processData = json => {
         }
 
         // delete screenshots
-        deleteFilesInDirectory('screenshots/')
+        if (process.env.DELETE_FILES === 'true' || process.env.DELETE_FILES === true) {
+            deleteFilesInDirectory('screenshots/')
+        }
     })()
 }

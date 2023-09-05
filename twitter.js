@@ -13,18 +13,18 @@ const client = new TwitterApi({
 const rwClient = client.readWrite
 
 export const tweet = (text, imagePath) => {
-  try {
+    try {
     // lower path
-    imagePath = imagePath.toLowerCase()
+        imagePath = imagePath.toLowerCase()
 
-    if (imagePath && imagePath !== '' && fs.existsSync(imagePath)) {
-        mediaTweet(text, imagePath)
-    } else {
-        tweetText(text)
+        if (imagePath && imagePath !== '' && fs.existsSync(imagePath)) {
+            mediaTweet(text, imagePath)
+        } else {
+            tweetText(text)
+        }
+    } catch (e) {
+        console.log('An error ocurred while tweeting.', e)
     }
-  } catch (e) {
-    console.log('An error ocurred while tweeting.', e);
-  }
 }
 
 // Create textTweet function which post
@@ -57,7 +57,7 @@ const mediaTweet = async (text, imagePath) => {
             text,
             media: { media_ids: [mediaId] }
         })
-        console.log('Tweet successful.')
+        console.log('Media tweet successful.')
     } catch (error) {
         console.log(error)
     }
