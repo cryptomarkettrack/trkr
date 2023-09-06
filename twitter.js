@@ -3,6 +3,8 @@ import { TwitterApiRateLimitPlugin } from '@twitter-api-v2/plugin-rate-limit'
 import fs from 'fs'
 import { logError } from './utils.js'
 
+// 50 requests / 24 hours are allowed
+
 let nextTwitterPostAttemptTimeInMs = null
 
 // Replace with your Twitter API credentials
@@ -55,8 +57,8 @@ export const tweet = async (text, imagePath) => {
     } catch (e) {
         console.log('An error ocurred while tweeting.', e)
         logError('An error ocurred while tweeting.', e)
-        const twoHoursFromNow = Date.now() + 2 * 60 * 60 * 1000
-        nextTwitterPostAttemptTimeInMs = twoHoursFromNow
+        const oneDayAndTwoMinutesFromNow = Date.now() + (2 * 1000) * (60 + 24 * 60 * 60 * 1000);
+        nextTwitterPostAttemptTimeInMs = oneDayAndTwoMinutesFromNow
     }
 }
 
