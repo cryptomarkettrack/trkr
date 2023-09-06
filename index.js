@@ -1,6 +1,5 @@
-import { fetchReportContent } from './fetcher.js'
+import { runProcessing } from './processor.js'
 
-const REPORT_INTERVAL = 30000
 let processed = false
 
 const checkAndExecute = () => {
@@ -12,7 +11,7 @@ const checkAndExecute = () => {
     // Execute your code here
         console.log('Code executed because current minutes are 59.')
 
-        fetchReportContent()
+        runProcessing()
         processed = true
     } else {
         console.log('Current hour:', currentHours, ' minutes:', currentMinutes)
@@ -24,10 +23,10 @@ const main = () => {
     if (process.env.IS_SCHEDULED === 'true' || process.env.IS_SCHEDULED === true) {
         setInterval(() => {
             checkAndExecute()
-        }, REPORT_INTERVAL)
+        }, process.env.SCHEDULE_INTERVAL)
     } else {
-        fetchReportContent()
+        runProcessing()
     }
 }
 
-main()
+main();

@@ -50,7 +50,7 @@ const processPair = async (page, asset, exchange) => {
 
         // Click 4h frame
         await page.waitForSelector(`#${asset}USDT`)
-        const selector = await findTimeframeTargetBox(page, process.env.DYOR_CHART_TIMEFRAME, asset)
+        const selector = await findTimeframeTargetBox(page, process.env.DYOR_CHART_TIMEFRAME, asset, exchange);
         await page.click(selector)
 
         // Wait for the chart to load
@@ -61,7 +61,7 @@ const processPair = async (page, asset, exchange) => {
         await page.click('.macd')
 
         // set indicators
-        const indicators = process.env.INDICATORS.split(', ')
+        const indicators = process.env.DYOR_INDICATORS.split(', ')
         for await (const indicator of indicators) {
             await clickInput(page, indicator)
         }
@@ -74,11 +74,11 @@ const processPair = async (page, asset, exchange) => {
         image = await page.screenshot({ path: `./screenshots/${exchange.toLowerCase()}.jpeg`, type: 'jpeg', quality: 100, omitBackground: true })
 
         // Hide the chart and proceed to next asset if present
-        await page.waitForSelector('a.hide-chart')
+        await page.waitForSelector('a.hide-chart', {timeout: 5000})
         await page.click('a.hide-chart')
     } catch (e) {
         console.log('An exception occured during drawing analysing chart for asset ', asset, e)
-        return null
+        return null;
     }
 
     return image
@@ -98,6 +98,6 @@ const login = async (page) => {
 
     // wait for premium modal
     await page.waitForSelector('#premium-soon')
-    // click submit
+    // click close
     await page.click('.close-popin')
 }
