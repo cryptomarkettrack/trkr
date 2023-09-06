@@ -47,3 +47,15 @@ export const deleteFilesInDirectory = (directoryPath) => {
         })
     })
 }
+
+export const findTimeframeTargetBox = async (page, timeframe, asset) => {
+    let result = await page.$$eval(`a[href*="${timeframe}"]`, (a) => a.map((element) => {
+        const href = element.getAttribute('href')
+        return `a[href="${href}"]`
+    }))
+
+    result = result.filter((href, index) => href.includes(`loadChart('${asset}'`) || href.includes('loadScan(\'\''))
+        .filter(a => a !== undefined)
+
+    return result?.length >= 1 ? result[0] : null
+}

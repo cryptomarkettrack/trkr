@@ -56,7 +56,6 @@ const processData = json => {
 
             for (const [index, p] of obj.Pumps.entries()) {
                 const asset = p[0]
-                console.log('asset', asset)
 
                 if (index === 0) {
                     exchangeAssetMap[exchange] = asset

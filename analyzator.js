@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer'
-import { clickInput } from './utils.js'
+import { clickInput, findTimeframeTargetBox } from './utils.js'
 
 export const drawChart = async (exchangeAssetMap) => {
     // init setup
@@ -49,25 +49,22 @@ const processPair = async (page, asset, exchange) => {
         await page.click(`[data-value="${asset}-USDT-${exchange}"]`)
 
         // Click 4h frame
-        await page.waitForSelector(`#${asset}USDT > td:nth-child(4)`)
-        await page.click(`#${asset}USDT > td:nth-child(4)`)
+        await page.waitForSelector(`#${asset}USDT`)
+        const selector = await findTimeframeTargetBox(page, process.env.DYOR_CHART_TIMEFRAME, asset)
+        await page.click(selector)
 
-        // Click 4h frame
+        // Wait for the chart to load
+        await page.waitForSelector('#the-chart')
+
+        // Click MACD selector
         await page.waitForSelector('.macd')
         await page.click('.macd')
 
-        // Display patterns on the chart
-        await page.waitForSelector('#the-chart')
-        await clickInput(page, '#ma50100-input')
-        // await clickInput(page, '#continuation_falling_wedge-input')
-        // await clickInput(page, '#reversal_falling_wedge-input')
-        // await clickInput(page, '#bullish_pennant-input')
-        // await clickInput(page, '#bull_flag-input')
-        // await clickInput(page, '#ascending_triangle-input')
-        // await clickInput(page, '#symmetrical_triangle-input')
-        // await clickInput(page, '#bearish_pennant-input')
-        await clickInput(page, '#trendline-input')
-        await clickInput(page, '#horizontallines-input')
+        // set indicators
+        const indicators = process.env.INDICATORS.split(', ')
+        for await (const indicator of indicators) {
+            await clickInput(page, indicator)
+        }
 
         // move the cursor away
         await page.mouse.move(1, 1)
