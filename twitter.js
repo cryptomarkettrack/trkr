@@ -1,41 +1,47 @@
 import { TwitterApi } from 'twitter-api-v2'
-import { TwitterApiRateLimitPlugin } from '@twitter-api-v2/plugin-rate-limit'
 import fs from 'fs'
-import { logError } from './utils.js'
+import { logError, logInFile } from './utils.js'
 
 // 50 requests / 24 hours are allowed
 
 let nextTwitterPostAttemptTimeInMs = null
+let tweetsSent = 0
+const initTime = Date.now()
+
+export const initTwitter = () => {
+// reset tweetsSent on each 24h
+    setInterval(() => {
+    // Check if it's been 24 hours (24 hours * 60 minutes/hour * 60 seconds/minute * 1000 milliseconds/second)
+        if (Date.now() - initTime >= 24 * 60 * 60 * 1000) {
+            console.log('Resetting tweets sent to 0')
+            tweetsSent = 0
+            logInFile('tweets.log', tweetsSent)
+        }
+    }, 60 * 1000)
+}
 
 // Replace with your Twitter API credentials
-const rateLimitPlugin = new TwitterApiRateLimitPlugin()
 const client = new TwitterApi({
     appKey: process.env.CONSUMER_KEY,
     appSecret: process.env.CONSUMER_SECRET,
     accessToken: process.env.ACCESS_TOKEN,
     accessSecret: process.env.ACCESS_SECRET,
     bearerToken: process.env.BEARER_TOKEN
-}, { plugins: [rateLimitPlugin] })
+})
 
 const rwClient = client.readWrite
 
 export const checkRateLimit = async () => {
-
-    if (nextTwitterPostAttemptTimeInMs != null && nextTwitterPostAttemptTimeInMs > Date.now()) {
+    if ((nextTwitterPostAttemptTimeInMs != null && nextTwitterPostAttemptTimeInMs > Date.now()) || tweetsSent > 49) {
+        console.log('Not allowing to process twitter flow since the next possible moment is at: ', new Date(nextTwitterPostAttemptTimeInMs), ', current sent tweets: ', tweetsSent)
         return {
             isRateLimited: true,
             info: 'CUSTOM TIMEOUT SET'
         }
     }
 
-    // ...make requests...
-    const me = await client.v2.me();
-    console.log('Twitter status: ', me);
-
-    const currentRateLimitForMe = await rateLimitPlugin.v2.getRateLimit('users/me')
     return {
-        isRateLimited: rateLimitPlugin.hasHitRateLimit(currentRateLimitForMe),
-        info: currentRateLimitForMe
+        isRateLimited: false
     }
 }
 
@@ -52,12 +58,16 @@ export const tweet = async (text, imagePath) => {
             console.log('Standard tweet successful')
         }
 
+        tweetsSent++
+        console.log('Total tweets sent: ', tweetsSent)
+        logInFile('tweets.log', tweetsSent)
+
         // reset flag
         nextTwitterPostAttemptTimeInMs = null
     } catch (e) {
         console.log('An error ocurred while tweeting.', e)
         logError('An error ocurred while tweeting.', e)
-        const oneDayAndTwoMinutesFromNow = Date.now() + (2 * 1000) * (60 + 24 * 60 * 60 * 1000);
+        const oneDayAndTwoMinutesFromNow = Date.now() + (2 * 1000) * (60 + 24 * 60 * 60 * 1000)
         nextTwitterPostAttemptTimeInMs = oneDayAndTwoMinutesFromNow
     }
 }

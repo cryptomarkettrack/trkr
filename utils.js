@@ -73,3 +73,12 @@ export const logError = (errorMsg) => {
         }
     })
 }
+
+export const logInFile = (logFileName = 'logfile.log', newContent) => {
+    // Create or append to the log file
+    fs.appendFile(logFileName, `${new Date().toISOString()}: ${newContent}\n`, (err) => {
+        if (err) {
+            console.error('Error writing to log file:', err)
+        }
+    })
+}

@@ -1,7 +1,7 @@
 import { drawChart } from './dyor.js'
 import { fetchTopGainers } from './altsdaddy.js'
 import { sendEmail } from './mailSender.js'
-import { checkRateLimit, tweet } from './twitter.js'
+import { checkRateLimit, initTwitter, tweet } from './twitter.js'
 import { deleteFilesInDirectory } from './utils.js'
 import dotenv from 'dotenv'
 dotenv.config({ path: './.env' })
@@ -10,6 +10,10 @@ export const runProcessing = () => {
     (async () => {
         // fetch top gainers by price and volume from altsdaddy
         const topGainersData = await fetchTopGainers()
+
+        // init twitter counter
+        initTwitter()
+
         let attachments = []
 
         // collect analytic images
@@ -37,7 +41,7 @@ export const runProcessing = () => {
                 }
             } else {
                 console.log('Rate limited on twitter. Fallback to email flow. Rate limit info: ', rateLimitData?.info)
-                sendEmail("RATE LIMITED!!!\n\n" + topGainersData.textContent, attachments)
+                sendEmail('RATE LIMITED!!!\n\n' + topGainersData.textContent, attachments)
             }
         }
 
