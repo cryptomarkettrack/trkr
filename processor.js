@@ -37,7 +37,7 @@ export const runProcessing = () => {
                 }
             } else {
                 console.log('Rate limited on twitter. Fallback to email flow. Rate limit info: ', rateLimitData?.info)
-                sendEmail(topGainersData.textContent, attachments)
+                sendEmail("RATE LIMITED!!!\n\n" + topGainersData.textContent, attachments)
             }
         }
 
