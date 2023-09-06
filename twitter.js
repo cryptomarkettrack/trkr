@@ -1,7 +1,7 @@
 import { TwitterApi } from 'twitter-api-v2'
 import { TwitterApiRateLimitPlugin } from '@twitter-api-v2/plugin-rate-limit'
 import fs from 'fs'
-import { logError } from './utils'
+import { logError } from './utils.js'
 
 let nextTwitterPostAttemptTimeInMs = null
 
@@ -16,7 +16,8 @@ const client = new TwitterApi({
 }, { plugins: [rateLimitPlugin] })
 
 // ...make requests...
-await client.v2.me()
+const me = await client.v2.me();
+console.log('Twitter status: ', me);
 
 const rwClient = client.readWrite
 
