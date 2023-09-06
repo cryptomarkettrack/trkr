@@ -15,19 +15,20 @@ const client = new TwitterApi({
     bearerToken: process.env.BEARER_TOKEN
 }, { plugins: [rateLimitPlugin] })
 
-// ...make requests...
-const me = await client.v2.me();
-console.log('Twitter status: ', me);
-
 const rwClient = client.readWrite
 
 export const checkRateLimit = async () => {
+
     if (nextTwitterPostAttemptTimeInMs != null && nextTwitterPostAttemptTimeInMs > Date.now()) {
         return {
             isRateLimited: true,
             info: 'CUSTOM TIMEOUT SET'
         }
     }
+
+    // ...make requests...
+    const me = await client.v2.me();
+    console.log('Twitter status: ', me);
 
     const currentRateLimitForMe = await rateLimitPlugin.v2.getRateLimit('users/me')
     return {
