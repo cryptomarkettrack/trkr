@@ -47,9 +47,12 @@ const processPair = async (page, asset, exchange) => {
         await page.type('#quickviewform-searchcoin', asset)
         await page.waitForSelector(`[data-value="${asset}-USDT-${exchange}"]`)
         await page.click(`[data-value="${asset}-USDT-${exchange}"]`)
+        
+        //waits for page load
+        await new Promise(resolve => setTimeout(resolve, 2000)) // 2 sec
+        await page.waitForSelector(`.exchange-${exchange.toLowerCase()}`)
 
         // Click 4h frame
-        await page.waitForSelector(`#${asset}USDT`)
         const selector = await findTimeframeTargetBox(page, process.env.DYOR_CHART_TIMEFRAME, asset, exchange);
         await page.click(selector)
 

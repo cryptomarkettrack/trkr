@@ -50,17 +50,15 @@ export const deleteFilesInDirectory = (directoryPath) => {
 
 export const findTimeframeTargetBox = async (page, timeframe, asset, exchange) => {
     exchange = exchange.toLowerCase();
-    
+
     let result = await page.$$eval(`a[href*="${timeframe}"]`, (a) => a.map((element) => {
         const href = element.getAttribute('href')
         return `a[href="${href}"]`
     }))
 
     result = result.filter((href, index) =>
-        href.includes(`loadChart('${asset}'`) ||
-        (href.includes(asset) && href.includes(exchange)) ||
-        href.includes('loadScan(\'\''))
-        .filter(a => a !== undefined)
+        href.includes(asset) && href.includes(exchange) && href.includes('loadChart'))
+            .filter(a => a !== undefined);
 
-    return result?.length >= 1 ? result[0] : null
+    return result?.length >= 1 ? result[0] : `#${asset}USDT > td:nth-child(4)`;
 }
