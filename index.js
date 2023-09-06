@@ -29,4 +29,4 @@ const main = () => {
     }
 }
 
-main();
+main()

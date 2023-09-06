@@ -1,29 +1,60 @@
 import { TwitterApi } from 'twitter-api-v2'
+import { TwitterApiRateLimitPlugin } from '@twitter-api-v2/plugin-rate-limit'
 import fs from 'fs'
+import { logError } from './utils'
+
+let nextTwitterPostAttemptTimeInMs = null
 
 // Replace with your Twitter API credentials
+const rateLimitPlugin = new TwitterApiRateLimitPlugin()
 const client = new TwitterApi({
     appKey: process.env.CONSUMER_KEY,
     appSecret: process.env.CONSUMER_SECRET,
     accessToken: process.env.ACCESS_TOKEN,
     accessSecret: process.env.ACCESS_SECRET,
     bearerToken: process.env.BEARER_TOKEN
-})
+}, { plugins: [rateLimitPlugin] })
+
+// ...make requests...
+await client.v2.me()
 
 const rwClient = client.readWrite
 
-export const tweet = (text, imagePath) => {
+export const checkRateLimit = async () => {
+    if (nextTwitterPostAttemptTimeInMs != null && nextTwitterPostAttemptTimeInMs > Date.now()) {
+        return {
+            isRateLimited: true,
+            info: 'CUSTOM TIMEOUT SET'
+        }
+    }
+
+    const currentRateLimitForMe = await rateLimitPlugin.v2.getRateLimit('users/me')
+    return {
+        isRateLimited: rateLimitPlugin.hasHitRateLimit(currentRateLimitForMe),
+        info: currentRateLimitForMe
+    }
+}
+
+export const tweet = async (text, imagePath) => {
     try {
-    // lower path
+        // lower path
         imagePath = imagePath.toLowerCase()
 
         if (imagePath && imagePath !== '' && fs.existsSync(imagePath)) {
-            mediaTweet(text, imagePath)
+            await mediaTweet(text, imagePath)
+            console.log('Media tweet successful')
         } else {
-            tweetText(text)
+            await tweetText(text)
+            console.log('Standard tweet successful')
         }
+
+        // reset flag
+        nextTwitterPostAttemptTimeInMs = null
     } catch (e) {
         console.log('An error ocurred while tweeting.', e)
+        logError('An error ocurred while tweeting.', e)
+        const twoHoursFromNow = Date.now() + 2 * 60 * 60 * 1000
+        nextTwitterPostAttemptTimeInMs = twoHoursFromNow
     }
 }
 
@@ -33,9 +64,7 @@ const tweetText = async (text) => {
     try {
     // Use .tweet() method and pass the
     // text you want to post
-        await rwClient.v2.tweet(text)
-
-        console.log('Tweet successful.')
+        return await rwClient.v2.tweet(text)
     } catch (error) {
         console.log(error)
     }
@@ -53,11 +82,10 @@ const mediaTweet = async (text, imagePath) => {
 
         // Use tweet() method and pass object with text
         // in text feild and media items in media feild
-        await rwClient.v2.tweet({
+        return rwClient.v2.tweet({
             text,
             media: { media_ids: [mediaId] }
         })
-        console.log('Media tweet successful.')
     } catch (error) {
         console.log(error)
     }

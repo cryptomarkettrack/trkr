@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@twitter-api-v2/plugin-rate-limit": "^1.1.0",
     "canvas": "^2.11.2",
     "cheerio": "^1.0.0-rc.12",
     "collections": "^5.1.13",

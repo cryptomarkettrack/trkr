@@ -47,13 +47,13 @@ const processPair = async (page, asset, exchange) => {
         await page.type('#quickviewform-searchcoin', asset)
         await page.waitForSelector(`[data-value="${asset}-USDT-${exchange}"]`)
         await page.click(`[data-value="${asset}-USDT-${exchange}"]`)
-        
-        //waits for page load
+
+        // waits for page load
         await new Promise(resolve => setTimeout(resolve, 2000)) // 2 sec
         await page.waitForSelector(`.exchange-${exchange.toLowerCase()}`)
 
         // Click 4h frame
-        const selector = await findTimeframeTargetBox(page, process.env.DYOR_CHART_TIMEFRAME, asset, exchange);
+        const selector = await findTimeframeTargetBox(page, process.env.DYOR_CHART_TIMEFRAME, asset, exchange)
         await page.click(selector)
 
         // Wait for the chart to load
@@ -77,11 +77,11 @@ const processPair = async (page, asset, exchange) => {
         image = await page.screenshot({ path: `./screenshots/${exchange.toLowerCase()}.jpeg`, type: 'jpeg', quality: 100, omitBackground: true })
 
         // Hide the chart and proceed to next asset if present
-        await page.waitForSelector('a.hide-chart', {timeout: 5000})
+        await page.waitForSelector('a.hide-chart', { timeout: 5000 })
         await page.click('a.hide-chart')
     } catch (e) {
         console.log('An exception occured during drawing analysing chart for asset ', asset, e)
-        return null;
+        return null
     }
 
     return image

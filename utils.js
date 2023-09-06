@@ -49,7 +49,7 @@ export const deleteFilesInDirectory = (directoryPath) => {
 }
 
 export const findTimeframeTargetBox = async (page, timeframe, asset, exchange) => {
-    exchange = exchange.toLowerCase();
+    exchange = exchange.toLowerCase()
 
     let result = await page.$$eval(`a[href*="${timeframe}"]`, (a) => a.map((element) => {
         const href = element.getAttribute('href')
@@ -58,7 +58,18 @@ export const findTimeframeTargetBox = async (page, timeframe, asset, exchange) =
 
     result = result.filter((href, index) =>
         href.includes(asset) && href.includes(exchange) && href.includes('loadChart'))
-            .filter(a => a !== undefined);
+        .filter(a => a !== undefined)
 
-    return result?.length >= 1 ? result[0] : `#${asset}USDT > td:nth-child(4)`;
+    return result?.length >= 1 ? result[0] : `#${asset}USDT > td:nth-child(4)`
+}
+
+export const logError = (errorMsg) => {
+    const logFileName = 'error.log'
+
+    // Create or append to the log file
+    fs.appendFile(logFileName, `${new Date().toISOString()}: ${errorMsg}\n`, (err) => {
+        if (err) {
+            console.error('Error writing to log file:', err)
+        }
+    })
 }
