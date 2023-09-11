@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import logger from './logger.js'
 
 export const clickInput = async (page, selector) => {
     const elementHandle = await page.$(selector) // Replace with your selector
@@ -40,6 +41,7 @@ export const deleteFilesInDirectory = (directoryPath) => {
                             console.error('Error deleting file:', unlinkErr)
                         } else {
                             console.log(`Deleted file: ${file}`)
+                            logger.info(`Deleted file: ${file}`)
                         }
                     })
                 }

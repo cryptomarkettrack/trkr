@@ -1,4 +1,5 @@
 import puppeteer from 'puppeteer'
+import logger from './logger.js'
 import { clickInput, findTimeframeTargetBox } from './utils.js'
 
 export const drawChart = async (exchangeAssetMap) => {
@@ -80,7 +81,9 @@ const processPair = async (page, asset, exchange) => {
         await page.waitForSelector('a.hide-chart', { timeout: 5000 })
         await page.click('a.hide-chart')
     } catch (e) {
+        const text = 
         console.log('An exception occured during drawing analysing chart for asset ', asset, e)
+        logger.error('An exception occured during drawing analysing chart for asset ', asset, e);
         return null
     }
 
