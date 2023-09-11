@@ -1,4 +1,5 @@
 import { runProcessing } from './processor.js'
+import logger from './logger.js'
 
 let processed = false
 
@@ -10,11 +11,13 @@ const checkAndExecute = () => {
     if (currentMinutes === 59 && currentHours >= 8 && currentHours <= 21 && !processed) {
     // Execute your code here
         console.log('Code executed because current minutes are 59.')
+        logger.info('Code executed because current minutes are 59.');
 
         runProcessing()
         processed = true
     } else {
         console.log('Current hour:', currentHours, ' minutes:', currentMinutes)
+        logger.info('Current hour:', currentHours, ' minutes:', currentMinutes);
         processed = false
     }
 }
