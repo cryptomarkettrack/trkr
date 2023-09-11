@@ -1,30 +1,32 @@
-import { fetchReportContent } from './fetcher.js';
+import { runProcessing } from './processor.js'
 
-const isScheduled = true;
-const REPORT_INTERVAL = 30000;
+let processed = false
 
 const checkAndExecute = () => {
-    const now = new Date();
-    const currentMinutes = now.getMinutes();
+    const now = new Date()
+    const currentMinutes = now.getMinutes()
+    const currentHours = now.getHours()
 
-    if (currentMinutes === 59) {
-        // Execute your code here
-        console.log("Code executed because current minutes are 59.");
-        fetchReportContent();
+    if (currentMinutes === 59 && currentHours >= 8 && currentHours <= 21 && !processed) {
+    // Execute your code here
+        console.log('Code executed because current minutes are 59.')
+
+        runProcessing()
+        processed = true
     } else {
-        console.log("Current minutes:", currentMinutes);
+        console.log('Current hour:', currentHours, ' minutes:', currentMinutes)
+        processed = false
     }
 }
 
 const main = () => {
-    if (isScheduled) {
+    if (process.env.IS_SCHEDULED === 'true' || process.env.IS_SCHEDULED === true) {
         setInterval(() => {
-            checkAndExecute();
-        }, REPORT_INTERVAL);
+            checkAndExecute()
+        }, process.env.SCHEDULE_INTERVAL)
     } else {
-        fetchReportContent();
-
+        runProcessing()
     }
 }
 
-main();
+main()
