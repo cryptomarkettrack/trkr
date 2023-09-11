@@ -1,5 +1,6 @@
 import dotenv from 'dotenv'
 dotenv.config({ path: './.env' })
+import logger from './logger.js'
 
 // collect top gainers by price and volume and perform analysis on them
 export const fetchTopGainers = async () => {
@@ -26,7 +27,7 @@ export const fetchTopGainers = async () => {
 
     const gainersData = await fetch('https://www.altsdaddy.com/_api/wix-code-public-dispatcher-ng/siteview/_webMethods/backend/test.jsw/httpgetHome.ajax?gridAppId=350ba791-436b-4ad2-9918-55dc92c9b438&instance=wixcode-pub.0575b1d1caf7b7cd22b366ff0fd5473f06354ce3.eyJpbnN0YW5jZUlkIjoiNzczOWY5ZDUtZTc0Yi00ZTMzLWJlYjYtMjZkMzNhNzgwZGUyIiwiaHRtbFNpdGVJZCI6Ijc3ZjNkZDc0LTA1YWQtNDAwMy04ZjE2LTYyNzI0MjY2OWM4YSIsInVpZCI6IjNmOTAyN2NjLTI5NDUtNDk3ZC1iYWI2LTM5MGUxNDAzMzcxYyIsInBlcm1pc3Npb25zIjpudWxsLCJpc1RlbXBsYXRlIjpmYWxzZSwic2lnbkRhdGUiOjE2OTIzMzMwOTYyNDMsImFpZCI6IjM5YmRlNzAwLWIyZDQtNDRjNy1hMTE2LWRhODgwNThkOWJhZiIsImFwcERlZklkIjoiQ2xvdWRTaXRlRXh0ZW5zaW9uIiwiaXNBZG1pbiI6ZmFsc2UsIm1ldGFTaXRlSWQiOiI3YTBjMzUzMS1mNzFkLTRmYjAtYjI2NS00ZWUwOTZmM2Y1ZmUiLCJjYWNoZSI6bnVsbCwiZXhwaXJhdGlvbkRhdGUiOiIyMDIzLTA4LTE4VDA4OjMxOjM2LjI0M1oiLCJwcmVtaXVtQXNzZXRzIjoiQWRzRnJlZSxIYXNEb21haW4sU2hvd1dpeFdoaWxlTG9hZGluZyIsInRlbmFudCI6bnVsbCwic2l0ZU93bmVySWQiOiI4NTRmNTgxNC1lN2E2LTRlZGUtOGEyNS0xMTZjNTNlMmIyYmQiLCJpbnN0YW5jZVR5cGUiOiJwdWIiLCJzaXRlTWVtYmVySWQiOiIzZjkwMjdjYy0yOTQ1LTQ5N2QtYmFiNi0zOTBlMTQwMzM3MWMiLCJwZXJtaXNzaW9uU2NvcGUiOm51bGwsImxvZ2luQWNjb3VudElkIjpudWxsfQ==&viewMode=site', requestOptions)
         .then(response => response.json())
-        .catch(error => console.log('error', error))
+        .catch(error => logger.error('error', error))
 
     return await processData(gainersData)
 }
@@ -75,6 +76,7 @@ const processData = async json => {
 
             content += '#crypto\n'
             tweets[exchange].text += '#crypto\n'
+            logger.info(content);
         }
     };
 

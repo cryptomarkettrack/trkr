@@ -1,5 +1,6 @@
 import * as nodemailer from 'nodemailer'
 import dotenv from 'dotenv'
+import logger from './logger.js'
 dotenv.config({ path: './.env' })
 
 const transporter = nodemailer.createTransport({
@@ -22,8 +23,10 @@ export const sendEmail = (content, attachments = []) => {
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
             console.log(error)
+            logger.error(error);
         } else {
             console.log('Email sent: ' + info.response)
+            logger.info('Email sent: ' + info.response);
         }
     })
 }
