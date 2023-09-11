@@ -75,7 +75,7 @@ const processPair = async (page, asset, exchange) => {
 
         // Capture a screenshot and save it as a JPG file
         await new Promise(resolve => setTimeout(resolve, 1000)) // 1 sec
-        image = await page.screenshot({ path: `./screenshots/${exchange.toLowerCase()}.jpeg`, type: 'jpeg', quality: 100, omitBackground: true })
+        image = await page.screenshot({ type: 'jpeg', quality: 100, omitBackground: true })
 
         // Hide the chart and proceed to next asset if present
         await page.waitForSelector('a.hide-chart', { timeout: 5000 })
