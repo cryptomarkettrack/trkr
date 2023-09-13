@@ -4,7 +4,7 @@ import { clickInput, findTimeframeTargetBox } from './utils.js'
 
 export const drawChart = async (exchangeAssetMap) => {
     // init setup
-    const browser = await puppeteer.launch({ headless: 'new' })
+    const browser = await puppeteer.launch({ headless: false, args: ['--start-fullscreen'] })
     const url = 'https://dyor.net/#dashboard'
     const page = await browser.newPage()
     await page.setViewport({ width: 1366, height: 768 })
