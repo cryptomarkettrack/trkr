@@ -2,6 +2,7 @@ import { runProcessing } from './processor.js'
 import logger from './logger.js'
 
 let processed = false
+let interval = null;
 
 const checkAndExecute = () => {
     const now = new Date()
@@ -26,7 +27,11 @@ const checkAndExecute = () => {
 
 const main = () => {
     if (process.env.IS_SCHEDULED === 'true' || process.env.IS_SCHEDULED === true) {
-        setInterval(() => {
+        if (interval !== null) {
+            clearInterval(interval)
+        }
+        
+        interval = setInterval(() => {
             checkAndExecute()
         }, process.env.SCHEDULE_INTERVAL)
     } else {
