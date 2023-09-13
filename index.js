@@ -8,10 +8,12 @@ const checkAndExecute = () => {
     const currentMinutes = now.getMinutes()
     const currentHours = now.getHours()
 
-    if (currentMinutes === 59 && currentHours >= 8 && currentHours <= 21 && !processed) {
+    if (process.env.SCHEDULE_MINUTES.includes(currentMinutes.toString())
+        && currentHours >= Number(process.env.SCHEDULE_FROM_HOURS)
+        && currentHours <= Number(process.env.SCHEDULE_TO_HOURS) && !processed) {
     // Execute your code here
-        console.log('Code executed because current minutes are 59.')
-        logger.info('Code executed because current minutes are 59.');
+        console.log(`Code executed because current minutes are ${SCHEDULE_FROM_HOURS}.`)
+        logger.info(`Code executed because current minutes are ${SCHEDULE_FROM_HOURS}.`);
 
         runProcessing()
         processed = true
