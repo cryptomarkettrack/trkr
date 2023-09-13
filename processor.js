@@ -4,7 +4,6 @@ import { sendEmail } from './mailSender.js'
 import { checkRateLimit, initTwitter, tweet } from './twitter.js'
 import { deleteFilesInDirectory } from './utils.js'
 import dotenv from 'dotenv'
-import logger from './logger.js'
 dotenv.config({ path: './.env' })
 
 export const runProcessing = () => {
@@ -31,7 +30,6 @@ export const runProcessing = () => {
         if (process.env.TWITTER_ENABLED === 'true') {
             const rateLimitData = await checkRateLimit()
             console.log('Rate limit data: ', rateLimitData)
-            logger.info('Rate limit data: ', rateLimitData);
 
             if (!rateLimitData.isRateLimited) {
                 for await (const exchange of Object.keys(topGainersData.tweets)) {
@@ -42,7 +40,6 @@ export const runProcessing = () => {
                     tweet(topGainersData.tweets[exchange].text, topGainersData.tweets[exchange].imagePath)
                 }
             } else {
-                logger.error('Rate limited on twitter. Fallback to email flow. Rate limit info: ', rateLimitData?.info);
                 console.log('Rate limited on twitter. Fallback to email flow. Rate limit info: ', rateLimitData?.info)
                 sendEmail('RATE LIMITED!!!\n\n' + topGainersData.textContent, attachments)
             }

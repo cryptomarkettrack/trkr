@@ -1,22 +1,21 @@
 import puppeteer from 'puppeteer'
-import logger from './logger.js'
 import { clickInput, findTimeframeTargetBox } from './utils.js'
 
 export const drawChart = async (exchangeAssetMap) => {
     // init setup
-    let browser;
+    let browser
 
     if (process.env.MODE === 'prod') {
-         browser = await puppeteer.launch({ headless: 'new' })
+        browser = await puppeteer.launch({ headless: 'new' })
     } else {
         browser = await puppeteer.launch({ headless: false, args: ['--start-fullscreen'] })
     }
-    
+
     const url = 'https://dyor.net/#dashboard'
     const page = await browser.newPage()
-    
+
     // Configure the navigation timeout
-    await page.setDefaultNavigationTimeout(0);
+    await page.setDefaultNavigationTimeout(0)
 
     await page.setViewport({ width: 1366, height: 768 })
     await page.goto(url)
@@ -96,9 +95,7 @@ const processPair = async (page, asset, exchange) => {
         await page.waitForSelector('a.hide-chart', { timeout: 5000 })
         await page.click('a.hide-chart')
     } catch (e) {
-        const text = 
         console.log('An exception occured during drawing analysing chart for asset ', asset, e)
-        logger.error('An exception occured during drawing analysing chart for asset ', asset, e);
         return null
     }
 
