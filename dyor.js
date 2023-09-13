@@ -5,8 +5,13 @@ import { clickInput, findTimeframeTargetBox } from './utils.js'
 export const drawChart = async (exchangeAssetMap) => {
     // init setup
     const browser = await puppeteer.launch({ headless: 'new' })
+    
     const url = 'https://dyor.net/#dashboard'
     const page = await browser.newPage()
+    
+    // Configure the navigation timeout
+    await page.setDefaultNavigationTimeout(0);
+
     await page.setViewport({ width: 1366, height: 768 })
     await page.goto(url)
 
