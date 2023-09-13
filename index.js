@@ -12,8 +12,8 @@ const checkAndExecute = () => {
         && currentHours >= Number(process.env.SCHEDULE_FROM_HOURS)
         && currentHours <= Number(process.env.SCHEDULE_TO_HOURS) && !processed) {
     // Execute your code here
-        console.log(`Code executed because current minutes are ${SCHEDULE_FROM_HOURS}.`)
-        logger.info(`Code executed because current minutes are ${SCHEDULE_FROM_HOURS}.`);
+        console.log(`Code executed because current minutes are ${currentMinutes}.`)
+        logger.info(`Code executed because current minutes are ${currentMinutes}.`);
 
         runProcessing()
         processed = true
