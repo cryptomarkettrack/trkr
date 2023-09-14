@@ -23,7 +23,17 @@ const checkAndExecute = () => {
     }
 }
 
+const sleepPrevention = () => {
+    setInterval(() => {
+        console.log('Sleep prevention started');
+        fetch('https://trkr-ushk.onrender.com');
+    }, 14 * 60 * 1000)
+}
+
 const main = () => {
+    //prevent instance from sleeping
+    sleepPrevention();
+
     if (process.env.IS_SCHEDULED === 'true' || process.env.IS_SCHEDULED === true) {
         setInterval(() => {
             checkAndExecute()
