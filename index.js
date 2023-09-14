@@ -1,17 +1,18 @@
 import { runProcessing } from './processor.js'
 
 let processed = false
-let interval = null
+const splittedMinutes = process.env.SCHEDULE_MINUTES.split(',');
 
 const checkAndExecute = () => {
     const now = new Date()
     const currentMinutes = now.getMinutes()
-    const currentHours = now.getHours()
+    const currentHours = now.getHours();
+    const isPresentMinute = splittedMinutes.find(m => m === currentMinutes.toString());
 
-    if (process.env.SCHEDULE_MINUTES.includes(currentMinutes.toString()) &&
+    if (isPresentMinute &&
         currentHours >= Number(process.env.SCHEDULE_FROM_HOURS) &&
         currentHours <= Number(process.env.SCHEDULE_TO_HOURS) && !processed) {
-    // Execute your code here
+        // Execute your code here
         console.log(`Code executed because current minutes are ${currentMinutes}.`)
 
         runProcessing()
@@ -24,11 +25,7 @@ const checkAndExecute = () => {
 
 const main = () => {
     if (process.env.IS_SCHEDULED === 'true' || process.env.IS_SCHEDULED === true) {
-        if (interval !== null) {
-            clearInterval(interval)
-        }
-
-        interval = setInterval(() => {
+        setInterval(() => {
             checkAndExecute()
         }, process.env.SCHEDULE_INTERVAL)
     } else {
