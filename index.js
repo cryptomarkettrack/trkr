@@ -1,13 +1,15 @@
 import { runProcessing } from './processor.js'
 
 let processed = false
+const splittedMinutes = process.env.SCHEDULE_MINUTES.split(',');
 
 const checkAndExecute = () => {
     const now = new Date()
     const currentMinutes = now.getMinutes()
-    const currentHours = now.getHours()
+    const currentHours = now.getHours();
+    const isPresentMinute = splittedMinutes.find(m => m === currentMinutes.toString());
 
-    if (process.env.SCHEDULE_MINUTES.includes(currentMinutes.toString()) &&
+    if (isPresentMinute &&
         currentHours >= Number(process.env.SCHEDULE_FROM_HOURS) &&
         currentHours <= Number(process.env.SCHEDULE_TO_HOURS) && !processed) {
         // Execute your code here
