@@ -27,7 +27,7 @@ const sleepPrevention = () => {
     setInterval(() => {
         console.log('Sleep prevention started');
         fetch('https://trkr-ushk.onrender.com');
-    }, 14 * 60 * 1000)
+    }, 12 * 60 * 1000)
 }
 
 const main = () => {
