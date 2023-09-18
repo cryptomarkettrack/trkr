@@ -1,6 +1,6 @@
-import * as nodemailer from 'nodemailer'
-import dotenv from 'dotenv'
-dotenv.config({ path: './.env' })
+import * as nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+dotenv.config({ path: './.env' });
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -8,7 +8,7 @@ const transporter = nodemailer.createTransport({
         user: process.env.EMAIL,
         pass: process.env.EMAIL_PASS
     }
-})
+});
 
 export const sendEmail = (content, attachments = []) => {
     const mailOptions = {
@@ -17,13 +17,13 @@ export const sendEmail = (content, attachments = []) => {
         subject: 'Trades report - ' + new Date().toLocaleString(),
         text: content,
         attachments
-    }
+    };
 
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
-            console.log(error)
+            console.log(error);
         } else {
-            console.log('Email sent: ' + info.response)
+            console.log('Email sent: ' + info.response);
         }
-    })
-}
+    });
+};
