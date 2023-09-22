@@ -67,10 +67,24 @@ export const tweet = async (text, imagePath) => {
     } catch (e) {
         console.log('An error ocurred while tweeting.', e);
         logError('An error ocurred while tweeting.', e);
-        const oneDayAndTwoMinutesFromNow = Date.now() + (2 * 1000) * (60 + 24 * 60 * 60 * 1000);
-        nextTwitterPostAttemptTimeInMs = oneDayAndTwoMinutesFromNow;
+        nextTwitterPostAttemptTimeInMs = nextMidNightMillis();
     }
 };
+
+const nextMidNightMillis = () => {
+    const now = new Date();
+    const midnight = new Date();
+  
+    // Set the time to 00:00:00 for the next day
+    midnight.setDate(midnight.getDate() + 1);
+    midnight.setHours(0, 0, 0, 0);
+  
+    // Get the timestamp in milliseconds for the next midnight
+    const midnightMilliseconds = midnight.getTime();
+  
+    return midnightMilliseconds;
+  }
+  
 
 // Create textTweet function which post
 // a text only tweet
