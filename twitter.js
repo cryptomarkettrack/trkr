@@ -9,15 +9,32 @@ let tweetsSent = 0;
 const initTime = Date.now();
 
 export const initTwitter = () => {
-// reset tweetsSent on each 24h
-    setInterval(() => {
+    // reset tweetsSent on each 24h
+    let shouldClear = false;
+    const interval = setInterval(() => {
     // Check if it's been 24 hours (24 hours * 60 minutes/hour * 60 seconds/minute * 1000 milliseconds/second)
         if (Date.now() - initTime >= 24 * 60 * 60 * 1000) {
             console.log('Resetting tweets sent to 0');
             tweetsSent = 0;
             logInFile('tweets.log', tweetsSent);
+            shouldClear = true;
         }
     }, 60 * 1000);
+
+    if (shouldClear) {
+        clearInterval(interval);
+        shouldClear = false;
+
+        interval = setInterval(() => {
+            // Check if it's been 24 hours (24 hours * 60 minutes/hour * 60 seconds/minute * 1000 milliseconds/second)
+            if (Date.now() - initTime >= 24 * 60 * 60 * 1000) {
+                console.log('Resetting tweets sent to 0');
+                tweetsSent = 0;
+                logInFile('tweets.log', tweetsSent);
+                shouldClear = true;
+            }
+        }, 60 * 1000);
+    }
 };
 
 // Replace with your Twitter API credentials
