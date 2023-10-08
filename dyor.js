@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer';
 import { clickInput, findTimeframeTargetBox } from './utils.js';
+import {processPairIndicators} from './tradingview.js';
 
 let retries = 0;
 
@@ -28,10 +29,19 @@ export const drawChart = async (exchangeAssetMap) => {
 
         // collect analytic images
         const images = [];
+        //push dyor screenshots
         for await (const [exchange, asset] of Object.entries(exchangeAssetMap)) {
             images.push({
                 filename: `${asset}-${exchange}.jpeg`,
                 content: await processPair(page, asset, exchange)
+            });
+        }
+
+        //push tradingview screenshots
+        for await (const [exchange, asset] of Object.entries(exchangeAssetMap)) {
+            images.push({
+                filename: `${asset}-indicators-${exchange}.jpeg`,
+                content: await processPairIndicators(page, asset, exchange)
             });
         }
 
