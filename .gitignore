@@ -4,4 +4,3 @@ screenshots/
 package-lock.json
 *.log
 package-lock.json
-.env.example

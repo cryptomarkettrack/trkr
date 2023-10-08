@@ -29,6 +29,7 @@ export const drawChart = async (exchangeAssetMap) => {
 
         // collect analytic images
         const images = [];
+        
         //push dyor screenshots
         for await (const [exchange, asset] of Object.entries(exchangeAssetMap)) {
             images.push({
@@ -37,12 +38,14 @@ export const drawChart = async (exchangeAssetMap) => {
             });
         }
 
-        //push tradingview screenshots
-        for await (const [exchange, asset] of Object.entries(exchangeAssetMap)) {
-            images.push({
-                filename: `${asset}-indicators-${exchange}.jpeg`,
-                content: await processPairIndicators(page, asset, exchange)
-            });
+        if (process.env.TRADING_VIEW_ENABLED === 'true') {
+            //push tradingview screenshots
+            for await (const [exchange, asset] of Object.entries(exchangeAssetMap)) {
+                images.push({
+                    filename: `${asset}-indicators-${exchange}.jpeg`,
+                    content: await processPairIndicators(page, asset, exchange)
+                });
+            }
         }
 
         browser.close();
