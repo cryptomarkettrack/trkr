@@ -35,9 +35,12 @@ export const runProcessing = async () => {
                 for await (const exchange of Object.keys(topGainersData.tweets)) {
                 // Replace Gateio to Gate
                     topGainersData.tweets[exchange].imagePath = `screenshots/${exchange.replaceAll('io', '')}.jpeg`;
+                    topGainersData.tweets[exchange].indicatorsImagePath = `screenshots/${exchange.replaceAll('io', '')}-indicators.jpeg`;
 
                     await new Promise(resolve => setTimeout(resolve, process.env.TWITTER_POST_INTERVAL_MS)); // 1 sec
-                    tweet(topGainersData.tweets[exchange].text, topGainersData.tweets[exchange].imagePath);
+                    tweet(topGainersData.tweets[exchange].text,
+                        topGainersData.tweets[exchange].imagePath,
+                        topGainersData.tweets[exchange].indicatorsImagePath);
                 }
             } else {
                 console.log('Rate limited on twitter. Fallback to email flow. Rate limit info: ', rateLimitData?.info);

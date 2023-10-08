@@ -1,16 +1,31 @@
 export const processPairIndicators = async (page, asset, exchange) => {
+    if (exchange === 'Kucoin') {
+        exchange = 'KuCoin';
+    }
+
+    if (exchange === 'Mexc') {
+        return;
+    }
+
+    if (exchange === 'Gateio') {
+        exchange = 'Gate';
+    }
+    
     let image;
-    await page.goto('https://www.tradingview.com/symbols/'+asset+'USDT/technicals');
+    await page.goto('https://www.tradingview.com/symbols/' + asset + 'USDT/technicals');
 
     try {
         // Search and select an asset
-        await page.waitForSelector('.speedometersContainer-kg4MJrFB');
-        await page.waitForSelector('#id_technicals-intervals-tabs_tablist');
+        await page.waitForSelector('.technicals-root');
         await page.click('#\\34 h');
+        await page.addStyleTag({ content: '.subtitle-lu7Cy9jC {display: none;}' })
+        await page.addStyleTag({ content: '.container-hvDpy38G {display: none;}' })
+        await page.addStyleTag({ content: '.tablesWrapper-kg4MJrFB {display: none;}' })
+        await page.addStyleTag({ content: '.variant-secondary-aHOVUrmQ {display: none;}' })
         
         await new Promise(resolve => setTimeout(resolve, 1000)); // 1 sec
 
-        const indicatorsContainer = await page.$('.speedometersContainer-kg4MJrFB');
+        let indicatorsContainer = await page.$('.technicals-root');
 
         // Capture a screenshot and save it as a JPG file
         await new Promise(resolve => setTimeout(resolve, 1000)); // 1 sec

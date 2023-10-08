@@ -62,12 +62,19 @@ export const checkRateLimit = async () => {
     };
 };
 
-export const tweet = async (text, imagePath) => {
+export const tweet = async (text, imagePath, indicatorsImagePath) => {
     try {
         // lower path
         imagePath = imagePath.toLowerCase();
+        indicatorsImagePath = indicatorsImagePath.toLowerCase();
 
-        if (imagePath && imagePath !== '' && fs.existsSync(imagePath)) {
+        const imagePathExists = imagePath && imagePath !== '' && fs.existsSync(imagePath);
+        const indicatorsImagePathExists = indicatorsImagePath && indicatorsImagePath !== '' && fs.existsSync(indicatorsImagePath);
+
+        if (imagePathExists && indicatorsImagePathExists) {
+            await mediaTweet(text, imagePath, indicatorsImagePath);
+            console.log('Media tweet successful');
+        } else if (imagePathExists && !indicatorsImagePathExists) {
             await mediaTweet(text, imagePath);
             console.log('Media tweet successful');
         } else {
@@ -117,19 +124,33 @@ const tweetText = async (text) => {
 
 // Create tweet function which post
 // tweet with media and text
-const mediaTweet = async (text, imagePath) => {
+const mediaTweet = async (text, imagePath, indicatorsImagePath) => {
     try {
-    // Create mediaID
+        // Create mediaID
         const mediaId = await rwClient.v1.uploadMedia(
             // Put path of image you wish to post
             imagePath
         );
 
+        let indicatorsMediaId = null;
+        if (indicatorsImagePath) {
+            indicatorsMediaId = await rwClient.v1.uploadMedia(
+                // Put path of image you wish to post
+                indicatorsImagePath
+            );
+        }
+
+        let mediaIdsArray = [mediaId];
+
+        if (indicatorsMediaId) {
+            mediaIdsArray.push(indicatorsMediaId);
+        }
+
         // Use tweet() method and pass object with text
         // in text feild and media items in media feild
         return rwClient.v2.tweet({
             text,
-            media: { media_ids: [mediaId] }
+            media: { media_ids: mediaIdsArray }
         });
     } catch (error) {
         console.log(error);
