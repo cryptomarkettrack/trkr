@@ -47,10 +47,13 @@ export const runProcessing = async () => {
                 sendEmail('RATE LIMITED!!!\n\n' + topGainersData.textContent, attachments);
             }
         }
-
+                   
         // delete screenshots
         if (process.env.DELETE_FILES === 'true') {
-            deleteFilesInDirectory('screenshots/');
+            //wait 1 min before deleting the files
+            setTimeout(() => {
+                deleteFilesInDirectory('screenshots/');
+            }, 60 * 1000);
         }
     } catch (e) {
         console.log('An unexpected error occur. ', e);
