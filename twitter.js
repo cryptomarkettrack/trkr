@@ -157,5 +157,7 @@ const mediaTweet = async (text, imagePath, indicatorsImagePath) => {
         });
     } catch (error) {
         console.log(error);
+        logError(`Error tweeting. Error: ${e}`);
+        
     }
 };

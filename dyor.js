@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer';
-import { clickInput, findTimeframeTargetBox } from './utils.js';
+import { clickInput, findTimeframeTargetBox, logError } from './utils.js';
 import {processPairIndicators} from './tradingview.js';
 
 let retries = 0;
@@ -119,6 +119,7 @@ const processPair = async (page, asset, exchange) => {
         await page.click('a.hide-chart');
     } catch (e) {
         console.log('An exception occured during drawing analysing chart for asset ', asset, e);
+        logError(`An error ocurred while drawing dyor analysing chart for asset ${asset}.Error: ${e}`);
         return null;
     }
 

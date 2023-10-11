@@ -1,3 +1,5 @@
+import { logError } from "./utils";
+
 export const processPairIndicators = async (page, asset, exchange) => {
     if (exchange === 'Kucoin') {
         exchange = 'KuCoin';
@@ -36,6 +38,7 @@ export const processPairIndicators = async (page, asset, exchange) => {
         }
     } catch (e) {
         console.log('An exception occured during drawing analysing chart for asset ', asset, e);
+        logError(`An error ocurred while drawing tradingview analysing chart for asset ${asset}.Error: ${e}`);
         return null;
     }
 
