@@ -77,6 +77,9 @@ export const tweet = async (text, imagePath, indicatorsImagePath) => {
         } else if (imagePathExists && !indicatorsImagePathExists) {
             await mediaTweet(text, imagePath);
             console.log('Media tweet successful');
+        } else if (!imagePathExists && indicatorsImagePathExists) {
+            await mediaTweet(text, indicatorsImagePath);
+            console.log('Media tweet successful');
         } else {
             await tweetText(text);
             console.log('Standard tweet successful');
@@ -90,7 +93,7 @@ export const tweet = async (text, imagePath, indicatorsImagePath) => {
         nextTwitterPostAttemptTimeInMs = null;
     } catch (e) {
         console.log('An error ocurred while tweeting.', e);
-        logError('An error ocurred while tweeting.', e);
+        logError(`An error ocurred while tweeting.Error: ${e}`);
         nextTwitterPostAttemptTimeInMs = nextMidNightMillis();
     }
 };
