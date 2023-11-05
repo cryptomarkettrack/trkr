@@ -1,4 +1,4 @@
-import { logError } from "./utils";
+import { logError } from "./utils.js";
 
 export const processPairIndicators = async (page, asset, exchange) => {
     if (exchange === 'Kucoin') {
