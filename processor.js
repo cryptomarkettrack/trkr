@@ -1,7 +1,7 @@
 import { drawChart } from './dyor.js';
 import { fetchTopGainers } from './altsdaddy.js';
 import { sendEmail } from './mailSender.js';
-import { checkRateLimit, initTwitter, tweet } from './twitter.js';
+import { checkRateLimit, tweet } from './twitter.js';
 import { deleteFilesInDirectory } from './utils.js';
 import dotenv from 'dotenv';
 dotenv.config({ path: './.env' });
@@ -12,7 +12,7 @@ export const runProcessing = async () => {
         const topGainersData = await fetchTopGainers();
 
         // init twitter counter
-        initTwitter();
+        // initTwitter();
 
         let attachments = [];
 

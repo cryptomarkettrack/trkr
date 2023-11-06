@@ -7,11 +7,14 @@ const checkAndExecute = () => {
     const now = new Date();
     const currentMinutes = now.getMinutes();
     const currentHours = now.getHours();
+    const hoursCondition = currentHours % 2 === 0; //every 2 hours
     const isPresentMinute = splittedMinutes.find(m => m === currentMinutes.toString());
 
     if (isPresentMinute &&
-        currentHours >= Number(process.env.SCHEDULE_FROM_HOURS) &&
-        currentHours <= Number(process.env.SCHEDULE_TO_HOURS) && !processed) {
+        // currentHours >= Number(process.env.SCHEDULE_FROM_HOURS) &&
+        // currentHours <= Number(process.env.SCHEDULE_TO_HOURS) &&
+        !processed
+        && hoursCondition) {
         // Execute your code here
         console.log(`Code executed because current minutes are ${currentMinutes}.`);
 

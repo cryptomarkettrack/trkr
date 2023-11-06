@@ -8,34 +8,34 @@ let nextTwitterPostAttemptTimeInMs = null;
 let tweetsSent = 0;
 const initTime = Date.now();
 
-export const initTwitter = () => {
-    // reset tweetsSent on each 24h
-    let shouldClear = false;
-    const interval = setInterval(() => {
-    // Check if it's been 24 hours (24 hours * 60 minutes/hour * 60 seconds/minute * 1000 milliseconds/second)
-        if (Date.now() - initTime >= 24 * 60 * 60 * 1000) {
-            console.log('Resetting tweets sent to 0');
-            tweetsSent = 0;
-            logInFile('tweets.log', tweetsSent);
-            shouldClear = true;
-        }
-    }, 60 * 1000);
+// export const initTwitter = () => {
+//     // reset tweetsSent on each 24h
+//     let shouldClear = false;
+//     // const interval = setInterval(() => {
+//     // // Check if it's been 24 hours (24 hours * 60 minutes/hour * 60 seconds/minute * 1000 milliseconds/second)
+//     //     if (Date.now() - initTime >= 24 * 60 * 60 * 1000) {
+//     //         console.log('Resetting tweets sent to 0');
+//     //         tweetsSent = 0;
+//     //         logInFile('tweets.log', tweetsSent);
+//     //         shouldClear = true;
+//     //     }
+//     // }, 60 * 1000);
 
-    if (shouldClear) {
-        clearInterval(interval);
-        shouldClear = false;
+//     if (shouldClear) {
+//         clearInterval(interval);
+//         shouldClear = false;
 
-        interval = setInterval(() => {
-            // Check if it's been 24 hours (24 hours * 60 minutes/hour * 60 seconds/minute * 1000 milliseconds/second)
-            if (Date.now() - initTime >= 24 * 60 * 60 * 1000) {
-                console.log('Resetting tweets sent to 0');
-                tweetsSent = 0;
-                logInFile('tweets.log', tweetsSent);
-                shouldClear = true;
-            }
-        }, 60 * 1000);
-    }
-};
+//         interval = setInterval(() => {
+//             // Check if it's been 24 hours (24 hours * 60 minutes/hour * 60 seconds/minute * 1000 milliseconds/second)
+//             if (Date.now() - initTime >= 24 * 60 * 60 * 1000) {
+//                 console.log('Resetting tweets sent to 0');
+//                 tweetsSent = 0;
+//                 logInFile('tweets.log', tweetsSent);
+//                 shouldClear = true;
+//             }
+//         }, 60 * 1000);
+//     }
+// };
 
 // Replace with your Twitter API credentials
 const client = new TwitterApi({
@@ -49,13 +49,13 @@ const client = new TwitterApi({
 const rwClient = client.readWrite;
 
 export const checkRateLimit = async () => {
-    if ((nextTwitterPostAttemptTimeInMs != null && nextTwitterPostAttemptTimeInMs > Date.now()) || tweetsSent > 49) {
-        console.log('Not allowing to process twitter flow since the next possible moment is at: ', new Date(nextTwitterPostAttemptTimeInMs), ', current sent tweets: ', tweetsSent);
-        return {
-            isRateLimited: true,
-            info: 'CUSTOM TIMEOUT SET'
-        };
-    }
+    // if ((nextTwitterPostAttemptTimeInMs != null && nextTwitterPostAttemptTimeInMs > Date.now()) || tweetsSent > 49) {
+    //     console.log('Not allowing to process twitter flow since the next possible moment is at: ', new Date(nextTwitterPostAttemptTimeInMs), ', current sent tweets: ', tweetsSent);
+    //     return {
+    //         isRateLimited: true,
+    //         info: 'CUSTOM TIMEOUT SET'
+    //     };
+    // }
 
     return {
         isRateLimited: false

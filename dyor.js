@@ -1,8 +1,10 @@
 import puppeteer from 'puppeteer';
 import { clickInput, findTimeframeTargetBox, logError } from './utils.js';
 import {processPairIndicators} from './tradingview.js';
+import { fetchTopGainers } from './altsdaddy.js';
 
 let retries = 0;
+const MAX_RETRIES = 10;
 
 export const drawChart = async (exchangeAssetMap) => {
     // init setup
@@ -32,10 +34,35 @@ export const drawChart = async (exchangeAssetMap) => {
         
         //push dyor screenshots
         for await (const [exchange, asset] of Object.entries(exchangeAssetMap)) {
+            let image = await processPair(page, asset, exchange);
+
+            while (!image) {
+                //break condition
+                if (retries >= MAX_RETRIES) {
+                    break;
+                }
+
+                console.log('asset', asset);
+                console.log('retries', retries);
+                //retry with different asset
+                const topGainersData = await fetchTopGainers();
+                logError(`Unable to perform analysis on ${asset}. New asset on ${exchange} is ${topGainersData.exchangeAssetMap[exchange]}`);
+                image = await processPair(page, topGainersData.exchangeAssetMap[exchange], exchange);
+
+                console.log('topGainersData', topGainersData);
+                if (topGainersData?.exchangeAssetMap[exchange] === asset) {
+                    await new Promise(resolve => setTimeout(resolve, 15 * 1000)); // 15 sec
+                }
+
+                retries++;
+            }
+            
             images.push({
                 filename: `${asset}-${exchange}.jpeg`,
-                content: await processPair(page, asset, exchange)
+                content: image
             });
+
+            retries = 0;
         }
 
         if (process.env.TRADING_VIEW_ENABLED === 'true') {
@@ -118,6 +145,8 @@ const processPair = async (page, asset, exchange) => {
         await page.waitForSelector('a.hide-chart', { timeout: 5000 });
         await page.click('a.hide-chart');
     } catch (e) {
+        //reset value
+        await page.$eval('#quickviewform-searchcoin', el => el.value = '');
         console.log('An exception occured during drawing analysing chart for asset ', asset, e);
         logError(`An error ocurred while drawing dyor analysing chart for asset ${asset}.Error: ${e}`);
         return null;
