@@ -6,7 +6,7 @@ import { fetchTopGainers } from './altsdaddy.js';
 let retries = 0;
 const MAX_RETRIES = 10;
 
-export const drawChart = async (exchangeAssetMap) => {
+export const drawChart = async (data) => {
     // init setup
     let browser;
 
@@ -33,7 +33,7 @@ export const drawChart = async (exchangeAssetMap) => {
         const images = [];
         
         //push dyor screenshots
-        for await (const [exchange, asset] of Object.entries(exchangeAssetMap)) {
+        for await (const [exchange, asset] of Object.entries(data.exchangeAssetMap)) {
             let image = await processPair(page, asset, exchange);
 
             while (!image) {
@@ -46,6 +46,10 @@ export const drawChart = async (exchangeAssetMap) => {
                 console.log('retries', retries);
                 //retry with different asset
                 const topGainersData = await fetchTopGainers();
+
+                //update original data object
+                data = topGainersData;
+
                 logError(`Unable to perform analysis on ${asset}. New asset on ${exchange} is ${topGainersData.exchangeAssetMap[exchange]}`);
                 image = await processPair(page, topGainersData.exchangeAssetMap[exchange], exchange);
 
@@ -67,7 +71,7 @@ export const drawChart = async (exchangeAssetMap) => {
 
         if (process.env.TRADING_VIEW_ENABLED === 'true') {
             //push tradingview screenshots
-            for await (const [exchange, asset] of Object.entries(exchangeAssetMap)) {
+            for await (const [exchange, asset] of Object.entries(data.exchangeAssetMap)) {
                 images.push({
                     filename: `${asset}-indicators-${exchange}.jpeg`,
                     content: await processPairIndicators(page, asset, exchange)
@@ -82,7 +86,7 @@ export const drawChart = async (exchangeAssetMap) => {
     } catch (e) {
         if (retries++ < 3) {
             browser.close();
-            await drawChart(exchangeAssetMap);
+            await drawChart(data.exchangeAssetMap);
         }
     }
 };

@@ -9,7 +9,7 @@ dotenv.config({ path: './.env' });
 export const runProcessing = async () => {
     try {
     // fetch top gainers by price and volume from altsdaddy
-        const topGainersData = await fetchTopGainers();
+        let topGainersData = await fetchTopGainers();
 
         // init twitter counter
         // initTwitter();
@@ -18,7 +18,7 @@ export const runProcessing = async () => {
 
         // collect analytic images
         if (process.env.DYOR_ENABLED === 'true') {
-            attachments = await drawChart(topGainersData.exchangeAssetMap);
+            attachments = await drawChart(topGainersData);
             attachments = attachments.filter(a => a !== undefined);
         }
 
