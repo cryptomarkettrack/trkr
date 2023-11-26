@@ -24,6 +24,12 @@ export const processPairIndicators = async (page, asset, exchange) => {
         await page.addStyleTag({ content: '.container-hvDpy38G {display: none;}' })
         await page.addStyleTag({ content: '.tablesWrapper-kg4MJrFB {display: none;}' })
         await page.addStyleTag({ content: '.variant-secondary-aHOVUrmQ {display: none;}' })
+
+        //Black friday override
+        await new Promise(resolve => setTimeout(resolve, 3000)); // 3 sec
+        if (await page.$('.dialog-close-Nc1uyYX2') !== null){
+            page.click('.dialog-close-Nc1uyYX2');
+        };
         
         await new Promise(resolve => setTimeout(resolve, 1000)); // 1 sec
 

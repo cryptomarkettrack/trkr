@@ -21,7 +21,7 @@ export const drawChart = async (data) => {
         const page = await browser.newPage();
 
         // Configure the navigation timeout
-        await page.setDefaultNavigationTimeout(0);
+        await page.setDefaultNavigationTimeout(30 * 1000);
 
         await page.setViewport({ width: 1366, height: 768 });
         await page.goto(url);
@@ -85,8 +85,13 @@ export const drawChart = async (data) => {
         return images;
     } catch (e) {
         if (retries++ < 3) {
-            browser.close();
-            await drawChart(data.exchangeAssetMap);
+            console.log('data', data);
+            if(data?.exchangeAssetMap){
+                browser.close();
+                await drawChart(data.exchangeAssetMap);
+            } else {
+                browser.close();
+            }
         }
     }
 };
@@ -125,8 +130,8 @@ const processPair = async (page, asset, exchange) => {
         await page.waitForSelector('#the-chart');
 
         // Click MACD selector
-        await page.waitForSelector('.macd');
-        await page.click('.macd');
+        // await page.waitForSelector('.macd');
+        // await page.click('.macd');
 
         // set indicators
         const indicators = process.env.DYOR_INDICATORS.split(', ');
