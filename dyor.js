@@ -1,6 +1,6 @@
 import puppeteer from 'puppeteer';
 import { clickInput, findTimeframeTargetBox, logError } from './utils.js';
-import {processPairIndicators} from './tradingview.js';
+import { processPairIndicators } from './tradingview.js';
 import { fetchTopGainers } from './altsdaddy.js';
 
 let retries = 0;
@@ -31,7 +31,7 @@ export const drawChart = async (data) => {
 
         // collect analytic images
         const images = [];
-        
+
         //push dyor screenshots
         for await (const [exchange, asset] of Object.entries(data.exchangeAssetMap)) {
             let image = await processPair(page, asset, exchange);
@@ -60,7 +60,7 @@ export const drawChart = async (data) => {
 
                 retries++;
             }
-            
+
             images.push({
                 filename: `${asset}-${exchange}.jpeg`,
                 content: image
@@ -82,11 +82,11 @@ export const drawChart = async (data) => {
         browser.close();
         retries = 0;
 
-        return images;
+        return { images: images, data: data };
     } catch (e) {
         if (retries++ < 3) {
             console.log('data', data);
-            if(data?.exchangeAssetMap){
+            if (data?.exchangeAssetMap) {
                 browser.close();
                 await drawChart(data.exchangeAssetMap);
             } else {

@@ -8,7 +8,7 @@ dotenv.config({ path: './.env' });
 
 export const runProcessing = async () => {
     try {
-    // fetch top gainers by price and volume from altsdaddy
+        // fetch top gainers by price and volume from altsdaddy
         let topGainersData = await fetchTopGainers();
 
         // init twitter counter
@@ -18,13 +18,15 @@ export const runProcessing = async () => {
 
         // collect analytic images
         if (process.env.DYOR_ENABLED === 'true') {
-            attachments = await drawChart(topGainersData);
+            const chartData = await drawChart(topGainersData);;
+            attachments = chartData?.images;
             attachments = attachments.filter(a => a !== undefined);
+            topGainersData = chartData?.data;
         }
 
         // Send email
         (process.env.SEND_EMAIL_ENABLED === 'true') &&
-        sendEmail(topGainersData.textContent, attachments);
+            sendEmail(topGainersData.textContent, attachments);
 
         // Twitter post
         if (process.env.TWITTER_ENABLED === 'true') {
@@ -33,7 +35,7 @@ export const runProcessing = async () => {
 
             if (!rateLimitData.isRateLimited) {
                 for await (const exchange of Object.keys(topGainersData.tweets)) {
-                // Replace Gateio to Gate
+                    // Replace Gateio to Gate
                     topGainersData.tweets[exchange].imagePath = `screenshots/${exchange.replaceAll('io', '')}.jpeg`;
                     topGainersData.tweets[exchange].indicatorsImagePath = `screenshots/${exchange.replaceAll('io', '')}-indicators.jpeg`;
 
@@ -47,7 +49,7 @@ export const runProcessing = async () => {
                 sendEmail('RATE LIMITED!!!\n\n' + topGainersData.textContent, attachments);
             }
         }
-                   
+
         // delete screenshots
         if (process.env.DELETE_FILES === 'true') {
             //wait 1 min before deleting the files
